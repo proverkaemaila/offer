@@ -1042,6 +1042,7 @@
                     section.style.zIndex = '0';
                 })
             };
+            const allVideoModal = document.querySelectorAll('[data-modal]');
 
             // Youtube & Vimeo
             document.querySelectorAll('.modalWindow-video > iframe').forEach(function (el) {
@@ -1056,8 +1057,10 @@
                 }
             });
 
-            if (document.querySelector('[data-modal]')) 
-                document.querySelector('[data-modal]').addEventListener('click', clickListener);
+            if (allVideoModal) 
+            allVideoModal.forEach(function(element){
+                    element.addEventListener('click', clickListener)
+                });
         }
     });
 
@@ -1424,46 +1427,34 @@
             setProgressElement(el, cardID, percent);
         }
     }
-    
-    if (isBuilder) {
-        $(document).on('add.cards changeParameter.cards', function (event, paramName) {
-            if (typeof CircularProgressBar !== 'undefined') new CircularProgressBar('pie_progress');
-            if (paramName) {
-                updateCircleProgress(event.target, paramName)
-            } else {
-                if (event.target.querySelectorAll('.pie_progress').length) {
-                    event.target.querySelectorAll('.pie_progress').forEach(function(el) {initCircleProgress(el)})
-                }
-            }
-        })
-    } else {
-        if (document.querySelectorAll('.pie_progress').length) {
-            if (typeof CircularProgressBar !== 'undefined') new CircularProgressBar('pie_progress');
-            document.querySelectorAll('.pie_progress').forEach(function(el) {initCircleProgress(el)})
-        }
-    }
 
-    if (isBuilder && isJQuery) {
-        $(document).on('add.cards', function(event) {
-            if($(event.target).hasClass('testimonials-slider')){
-                initTestimonialsCarousel(event.target);
-            }
-
-        }).on('changeParameter.cards', function(event, paramName, value) {
-            if (paramName === 'testimonialsSlides') {
-                if ($(event.target).find('.carousel-item.active').length==0) {
-                    setActiveCarouselItem(event.target);
-                }
-            }
+    function obj_hover_rotate($hover_obj, $wrap_obj, $move_obj){
+        $($hover_obj).mousemove(function(ev){
+          var oEvent = ev || event;
+          var cardWidth = parseInt($($wrap_obj).css('width'));
+          var cardHeight = parseInt($($wrap_obj).css('height'));
+          var cardLeft = parseInt($($wrap_obj).css('left'));
+          var cardTop = parseInt($($wrap_obj).css('top'));
+          var centerDisX = oEvent.clientX - cardLeft; 
+          var centerDisY = oEvent.clientY - cardTop;
+          console.log(centerDisX)
+          var degX = (Math.abs(centerDisY) / (cardHeight/2)) * 10;
+          var degY = (Math.abs(centerDisX) / (cardWidth/2)) * 10;    
+          if(centerDisY < 0 && centerDisX < 0){
+             $($move_obj).css({'transform' : 'translate(-50%, -50%) rotateX('+degX+'deg) rotateY(-'+degY+'deg)'});
+          }
+           if(centerDisY < 0 && centerDisX > 0){
+             $($move_obj).css({'transform' : 'translate(-50%, -50%) rotateX('+degX+'deg) rotateY('+degY+'deg)'});
+          }
+           if(centerDisY > 0 && centerDisX < 0){
+             $($move_obj).css({'transform' : 'translate(-50%, -50%) rotateX(-'+degX+'deg) rotateY(-'+degY+'deg)'});
+          }
+           if(centerDisY > 0 && centerDisX > 0){
+             $($move_obj).css({'transform' : 'translate(-50%, -50%) rotateX(-'+degX+'deg) rotateY('+degY+'deg)'});
+          }
         });
-        } else {
-        if (typeof window.initTestimonialsPlugin === 'undefined'){
-            window.initTestimonialsPlugin = true;
-            document.querySelectorAll('.testimonials-slider').forEach(function(el){
-                initTestimonialsCarousel(el);
-            });      
-        }
-    }
+      }
+
 
     // init
     ready(function(){
@@ -1480,4 +1471,30 @@
             })
         }
     })
+
 }());
+
+
+
+
+const imgContainer = document.querySelector(".Parallax-container");
+
+const move = function(e) {
+  let x = e.pageX - this.offsetLeft - this.offsetWidth / 0.5;
+  let y = e.pageY - this.offsetTop - this.offsetHeight / 0.5;
+  let xPourcent = x * 100 / this.offsetWidth / 10;
+  let yPourcent = y * 100 / this.offsetHeight / 10;
+
+  this.style.transform = "rotateX("+ -yPourcent +"deg) rotateY("+ xPourcent +"deg)";
+};
+
+const reinit = function() {
+  setTimeout(() => {
+    this.style.transform = "";
+  }, 200);
+};
+
+imgContainer && imgContainer.addEventListener("mousemove", move);
+
+
+

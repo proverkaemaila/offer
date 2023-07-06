@@ -90,7 +90,7 @@
             }
           });
     }
-
+    
     document.addEventListener('collapse.bs.nav-dropdown', event => {
         let dropDown = event.relatedTarget.closest('.navbar-dropdown');
         if (dropDown) {
